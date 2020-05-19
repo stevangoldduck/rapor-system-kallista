@@ -90,4 +90,33 @@ class User_model extends CI_Model
 		return $users->result();
 	}
 
+	public function hasAccess(string $permission_name)
+	{
+		$user_id = $this->session->userdata('user_logged');
+
+		$user_access = $this->findUserById($user_id->id);
+
+
+		$is_allowed = false;
+		
+		foreach(json_decode($user_access->user_access,TRUE) as $key => $item)
+		{
+			if($key == $permission_name)
+			{
+				$is_allowed = true;
+				break;
+			}
+		}
+
+		if($is_allowed == false)
+		{
+			// echo $user_access->user_access;
+			return show_error('Unable to do this action',401,'Unrestricted Action');
+		}
+		else{
+			return true;
+		}
+		
+	}
+
 }

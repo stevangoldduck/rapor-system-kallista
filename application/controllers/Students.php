@@ -19,9 +19,12 @@ class Students extends CI_Controller
 
 	public function index()
 	{
-		$this->template->set('title', 'Students | Dashboard');
-		$this->template->load('app', 'contents', 'students/index.php', []);
-		$this->template->push_js('push_js', 'students/scripts/datatable.php');
+		if($this->user_model->hasAccess("view_student"))
+		{
+			$this->template->set('title', 'Students | Dashboard');
+			$this->template->load('app', 'contents', 'students/index.php', []);
+			$this->template->push_js('push_js', 'students/scripts/datatable.php');
+		}
 	}
 
 	public function create()
