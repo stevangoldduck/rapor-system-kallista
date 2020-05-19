@@ -88,7 +88,12 @@ class Users extends CI_Controller
 
 		if($this->form_validation->run() != false){
 			if($this->user_model->edit($id,$data,$password))
-			{
+			{	
+				if($id == $_SESSION['user_logged']->id)
+				{
+					$_SESSION['user_logged']->user_access = $data['user_access'];
+				}
+				
 				$this->session->set_flashdata('success', 'Record saved!!');
 				redirect(site_url('users/'.$id.'/edit'));
 			}

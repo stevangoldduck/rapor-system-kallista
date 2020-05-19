@@ -94,12 +94,12 @@ class User_model extends CI_Model
 	{
 		$user_id = $this->session->userdata('user_logged');
 
-		$user_access = $this->findUserById($user_id->id);
+		//$user_access = $this->findUserById($user_id->id);
 
 
 		$is_allowed = false;
 		
-		foreach(json_decode($user_access->user_access,TRUE) as $key => $item)
+		foreach(json_decode($user_id->user_access,TRUE) as $key => $item)
 		{
 			if($key == $permission_name)
 			{
