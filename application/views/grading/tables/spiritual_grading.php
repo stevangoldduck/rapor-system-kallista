@@ -7,11 +7,11 @@
 		</tr>
 	</thead>
 	<tbody>
-	<?php foreach ($student as $item) { ?>
+	<?php foreach ($spiritual as $item) { ?>
 		<tr>
 			<td><?php echo $item->student_name ?></td>
-			<td><input type="text" class="form-control" name=""></td>
-			<td><input type="text" class="form-control" name=""></td>
+			<td><input type="text" class="form-control" name="sspg_grade<?php echo $item->student_id ?>" value="<?php echo $item->sspg_grade ?>"></td>
+			<td><input type="text" class="form-control" name="sspg_remark<?php echo $item->student_id ?>" value="<?php echo $item->sspg_remark ?>"></td>
 		</tr>
 	<?php } ?>
 	</tbody>

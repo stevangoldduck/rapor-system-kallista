@@ -11,7 +11,7 @@
 		<tr>
 			<td><?php echo $item->student_name ?></td>
 			<td><input type="text" class="form-control" name="sspg_grade<?php echo $item->student_id ?>"></td>
-			<td><input type="text" class="form-control" name="sspg_grade<?php echo $item->student_id ?>"></td>
+			<td><input type="text" class="form-control" name="sspg_remark<?php echo $item->student_id ?>"></td>
 		</tr>
 	<?php } ?>
 	</tbody>
