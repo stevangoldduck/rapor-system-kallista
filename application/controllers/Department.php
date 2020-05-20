@@ -8,26 +8,30 @@ class Department extends CI_Controller
 	{
 		parent::__construct();
 
-		$this->load->helper(array('url','date'));
+		$this->load->helper(array('url', 'date'));
 
-		$this->load->library(array('template','form_validation'));
+		$this->load->library(array('template', 'form_validation'));
 
-		$this->load->model(array("user_model","department_model"));
-		
+		$this->load->model(array("user_model", "department_model"));
+
 		if ($this->user_model->isNotAuthenticated()) redirect(site_url('/'));
 	}
 
 	public function index()
 	{
-		$this->template->set('title', 'Department | Dashboard');
-		$this->template->load('app', 'contents', 'department/index.php', []);
-		$this->template->push_js('push_js', 'department/scripts/datatable.php');
+		if ($this->user_model->hasAccess("view_department")) {
+			$this->template->set('title', 'Department | Dashboard');
+			$this->template->load('app', 'contents', 'department/index.php', []);
+			$this->template->push_js('push_js', 'department/scripts/datatable.php');
+		}
 	}
 
 	public function create()
 	{
-		$this->template->set('title', 'Department Create | Dashboard');
-		$this->template->load('app', 'contents', 'subject_group/create.php', ['view_type' => 'create']);
+		if ($this->user_model->hasAccess("create_department")) {
+			$this->template->set('title', 'Department Create | Dashboard');
+			$this->template->load('app', 'contents', 'subject_group/create.php', ['view_type' => 'create']);
+		}
 	}
 
 	public function list_dp()
@@ -38,63 +42,59 @@ class Department extends CI_Controller
 
 	public function edit($id)
 	{
-		$dp = new Department_model();
-		$data = $dp->findDepartmentById($id);
-		
+		if ($this->user_model->hasAccess("view_department")) {
+			$dp = new Department_model();
+			$data = $dp->findDepartmentById($id);
 
-		$this->template->set('title', 'Department Edit | Dashboard');
-		$this->template->load('app', 'contents', 'department/edit.php', $data);
+
+			$this->template->set('title', 'Department Edit | Dashboard');
+			$this->template->load('app', 'contents', 'department/edit.php', $data);
+		}
 	}
 
 	public function formAction()
 	{
-		if($this->input->post('action_type') == "update")
-		{
+		if ($this->input->post('action_type') == "update") {
 			$id = $this->input->post('dp_id');
 
 			$sg = new Department_model();
 			$data = $sg->findDepartmentById($id);
 
-			if($data['department_name'] !=  $this->input->post('dp_name'))
-			{
+			if ($data['department_name'] !=  $this->input->post('dp_name')) {
 				$is_unique_name = '|is_unique[departments.department_name]';
-			}
-			else{
+			} else {
 				$is_unique_name = '';
 			}
-		}
-		else{
+		} else {
 			$is_unique_name = '|is_unique[departments.department_name]';
 		}
-		
-		$this->form_validation->set_rules('dp_name', 'Department Name', 'required'.$is_unique_name);
+
+		$this->form_validation->set_rules('dp_name', 'Department Name', 'required' . $is_unique_name);
 
 		$data = array(
 			'department_name' => $this->input->post('dp_name'),
 		);
 
-		if($this->form_validation->run() != false){
-			if($this->input->post('action_type') == "update")
-			{
-				if($this->department_model->edit($id,$data))
-				{
-					$this->session->set_flashdata('success', 'Record updated!!');
-					$this->edit($id);
+		if ($this->form_validation->run() != false) {
+			if ($this->input->post('action_type') == "update") {
+				if ($this->user_model->hasAccess("edit_department")) {
+					if ($this->department_model->edit($id, $data)) {
+						$this->session->set_flashdata('success', 'Record updated!!');
+						$this->edit($id);
+					}
+				}
+			} else {
+				if ($this->user_model->hasAccess("create_department")) {
+					if ($this->department_model->insert($data)) {
+						$this->session->set_flashdata('success', 'Record saved!!');
+						$this->create();
+					}
 				}
 			}
-			else{
-				if($this->department_model->insert($data))
-				{
-					$this->session->set_flashdata('success', 'Record saved!!');
-					$this->create();
-				}
-			}
-		}
-		else{
-			if($this->input->post('action_type') == "update"){
+		} else {
+			if ($this->input->post('action_type') == "update") {
 				$this->edit($id);
-			}
-			else{
+			} else {
 				$this->create();
 			}
 		}

@@ -37,17 +37,21 @@ class Subjects extends CI_Controller
 
 	public function index()
 	{
-		$this->template->set('title', 'Subjects | Dashboard');
-		$this->template->load('app', 'contents', 'subject/index.php', []);
-		$this->template->push_js('push_js', 'subject/scripts/datatable.php');
+		if ($this->user_model->hasAccess("view_subject")) {
+			$this->template->set('title', 'Subjects | Dashboard');
+			$this->template->load('app', 'contents', 'subject/index.php', []);
+			$this->template->push_js('push_js', 'subject/scripts/datatable.php');
+		}
 	}
 
 	public function create()
 	{
-		$homerooms = $this->user_model->getAllUser();
-		$sg = $this->subject_group_model->getAllSG();
-		$this->template->set('title', 'Subject Create | Dashboard');
-		$this->template->load('app', 'contents', 'subject/create.php', ['view_type' => 'create', 'teachers' => $homerooms, 'subject_groups' => $sg]);
+		if ($this->user_model->hasAccess("create_subject")) {
+			$homerooms = $this->user_model->getAllUser();
+			$sg = $this->subject_group_model->getAllSG();
+			$this->template->set('title', 'Subject Create | Dashboard');
+			$this->template->load('app', 'contents', 'subject/create.php', ['view_type' => 'create', 'teachers' => $homerooms, 'subject_groups' => $sg]);
+		}
 	}
 
 	public function list_subject()
@@ -65,17 +69,19 @@ class Subjects extends CI_Controller
 
 	public function edit($id)
 	{
-		$class = new Subject_model();
-		$data = $class->findSubjectById($id);
-		$homerooms = $this->user_model->getAllUser();
-		$sg = $this->subject_group_model->getAllSG();
+		if ($this->user_model->hasAccess("view_subject")) {
+			$class = new Subject_model();
+			$data = $class->findSubjectById($id);
+			$homerooms = $this->user_model->getAllUser();
+			$sg = $this->subject_group_model->getAllSG();
 
-		$data['teachers'] = $homerooms;
-		$data['subject_groups'] = $sg;
+			$data['teachers'] = $homerooms;
+			$data['subject_groups'] = $sg;
 
-		$this->template->set('title', 'Subject Edit | Dashboard');
-		$this->template->load('app', 'contents', 'subject/edit.php', $data);
-		$this->template->push_js('push_js', 'subject/scripts/datatable.php');
+			$this->template->set('title', 'Subject Edit | Dashboard');
+			$this->template->load('app', 'contents', 'subject/edit.php', $data);
+			$this->template->push_js('push_js', 'subject/scripts/datatable.php');
+		}
 	}
 
 	public function formAction()
@@ -168,15 +174,18 @@ class Subjects extends CI_Controller
 
 		if ($this->form_validation->run() != false) {
 			if ($this->input->post('action_type') == "update") {
-
-				if ($this->subject_model->edit($id, $data)) {
-					$this->session->set_flashdata('success', 'Record saved!!');
-					$this->edit($id);
+				if ($this->user_model->hasAccess("edit_subject")) {
+					if ($this->subject_model->edit($id, $data)) {
+						$this->session->set_flashdata('success', 'Record saved!!');
+						$this->edit($id);
+					}
 				}
 			} else {
-				if ($this->subject_model->insert($data)) {
-					$this->session->set_flashdata('success', 'Record saved!!');
-					$this->create();
+				if ($this->user_model->hasAccess("create_subject")) {
+					if ($this->subject_model->insert($data)) {
+						$this->session->set_flashdata('success', 'Record saved!!');
+						$this->create();
+					}
 				}
 			}
 		} else {

@@ -8,19 +8,18 @@ class Students extends CI_Controller
 	{
 		parent::__construct();
 
-		$this->load->helper(array('url','date'));
+		$this->load->helper(array('url', 'date'));
 
-		$this->load->library(array('template','form_validation'));
+		$this->load->library(array('template', 'form_validation'));
 
-		$this->load->model(array("user_model","student_model"));
-		
+		$this->load->model(array("user_model", "student_model"));
+
 		if ($this->user_model->isNotAuthenticated()) redirect(site_url('/'));
 	}
 
 	public function index()
 	{
-		if($this->user_model->hasAccess("view_student"))
-		{
+		if ($this->user_model->hasAccess("view_student")) {
 			$this->template->set('title', 'Students | Dashboard');
 			$this->template->load('app', 'contents', 'students/index.php', []);
 			$this->template->push_js('push_js', 'students/scripts/datatable.php');
@@ -29,8 +28,10 @@ class Students extends CI_Controller
 
 	public function create()
 	{
-		$this->template->set('title', 'Students Create | Dashboard');
-		$this->template->load('app', 'contents', 'students/create.php', ['view_type' => 'create']);
+		if ($this->user_model->hasAccess("create_student")) {
+			$this->template->set('title', 'Students Create | Dashboard');
+			$this->template->load('app', 'contents', 'students/create.php', ['view_type' => 'create']);
+		}
 	}
 
 	public function list_student()
@@ -41,48 +42,42 @@ class Students extends CI_Controller
 
 	public function edit($id)
 	{
-		$student = new Student_model();
-		$data = $student->findStudentById($id);
-		
+		if ($this->user_model->hasAccess("view_student")) {
+			$student = new Student_model();
+			$data = $student->findStudentById($id);
 
-		$this->template->set('title', 'Student Edit | Dashboard');
-		$this->template->load('app', 'contents', 'students/edit.php', $data);
+
+			$this->template->set('title', 'Student Edit | Dashboard');
+			$this->template->load('app', 'contents', 'students/edit.php', $data);
+		}
 	}
 
 	public function formAction()
 	{
-		if($this->input->post('action_type') == "update")
-		{
+		if ($this->input->post('action_type') == "update") {
 			$id = $this->input->post('student_id');
 
 			$student = new Student_model();
 			$data = $student->findStudentById($id);
 
-			if($data->student_nis !=  $this->input->post('nis'))
-			{
+			if ($data->student_nis !=  $this->input->post('nis')) {
 				$is_unique_nis = '|is_unique[students.student_nis]';
-			}
-			else{
+			} else {
 				$is_unique_nis = '';
 			}
 
-			if($data->student_nisn != $this->input->post('nisn'))
-			{
+			if ($data->student_nisn != $this->input->post('nisn')) {
 				$is_unique_nisn = '|is_unique[students.student_nisn]';
-				
-			}
-			else{
+			} else {
 				$is_unique_nisn = '';
 			}
-
-		}
-		else{
+		} else {
 			$is_unique_nis = '|is_unique[students.student_nis]';
 			$is_unique_nisn = '|is_unique[students.student_nisn]';
 		}
-		
-		$this->form_validation->set_rules('nis', 'NIS', 'required'.$is_unique_nis);
-		$this->form_validation->set_rules('nisn', 'NISN', 'required'.$is_unique_nisn);
+
+		$this->form_validation->set_rules('nis', 'NIS', 'required' . $is_unique_nis);
+		$this->form_validation->set_rules('nisn', 'NISN', 'required' . $is_unique_nisn);
 		$this->form_validation->set_rules('name', 'name', 'required');
 		$this->form_validation->set_rules('department', 'department', 'required');
 
@@ -106,30 +101,26 @@ class Students extends CI_Controller
 			'student_modified_by' => $this->user_model->getAuthUser()->id,
 		);
 
-		if($this->form_validation->run() != false){
-			if($this->input->post('action_type') == "update")
-			{
-				if($this->student_model->edit($id,$data))
-				{
-					$this->session->set_flashdata('success', 'Record saved!!');
-					$this->edit($id);
+		if ($this->form_validation->run() != false) {
+			if ($this->input->post('action_type') == "update") {
+				if ($this->user_model->hasAccess("edit_student")) {
+					if ($this->student_model->edit($id, $data)) {
+						$this->session->set_flashdata('success', 'Record saved!!');
+						$this->edit($id);
+					}
+				}
+			} else {
+				if ($this->user_model->hasAccess("create_student")) {
+					if ($this->student_model->insert($data)) {
+						$this->session->set_flashdata('success', 'Record saved!!');
+						$this->create();
+					}
 				}
 			}
-			else{
-				if($this->student_model->insert($data))
-				{
-					$this->session->set_flashdata('success', 'Record saved!!');
-					$this->create();
-				}
-			}
-			
-
-		}
-		else{
-			if($this->input->post('action_type') == "update"){
+		} else {
+			if ($this->input->post('action_type') == "update") {
 				$this->edit($id);
-			}
-			else{
+			} else {
 				$this->create();
 			}
 		}
