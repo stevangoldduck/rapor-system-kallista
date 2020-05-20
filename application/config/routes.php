@@ -14,5 +14,7 @@ include('include_routes/grading_routes.php');
 include('include_routes/subject_group_routes.php');
 include('include_routes/department_routes.php');
 include('include_routes/teacher_routes.php');
+include('include_routes/student_report.php');
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

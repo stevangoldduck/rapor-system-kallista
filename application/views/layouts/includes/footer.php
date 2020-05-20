@@ -10,7 +10,8 @@
     	$.widget.bridge('uibutton', $.ui.button);
     </script>
     <!-- Bootstrap 3.3.7 -->
-    <script src="<?php echo base_url('assets/bower_components/bootstrap/dist/js/bootstrap.min.js') ?>"></script>
+	<script src="<?php echo base_url('assets/bower_components/bootstrap/dist/js/bootstrap.min.js') ?>"></script>
+	<script src="<?php echo base_url('assets/bower_components/select2/dist/js/select2.full.min.js') ?>"></script>
     <script src="<?php echo base_url('assets/bower_components/raphael/raphael.min.js') ?>"></script>
     <!-- Sparkline -->
     <script src="<?php echo base_url('assets/bower_components/jquery-sparkline/dist/jquery.sparkline.min.js') ?>"></script>
@@ -34,6 +35,7 @@
     <script src="<?php echo base_url('assets/dist/js/adminlte.min.js') ?>"></script>
     <script>
     	$(function() {
+			$('.select2').select2()
     		$('input').iCheck({
     			checkboxClass: 'icheckbox_square-blue',
     			radioClass: 'iradio_square-blue',

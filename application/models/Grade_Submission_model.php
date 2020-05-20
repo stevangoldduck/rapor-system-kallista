@@ -50,4 +50,17 @@ class Grade_Submission_model extends CI_Model
 			show_404();
 		}
 	}
+
+	public function student_mid_raport($student_id,$ac_year)
+	{
+		$this->db->where('gs_sy',$ac_year);
+		$this->db->where('skg_student_id',$student_id);
+		$this->db->where('ssg_student_id',$student_id);
+		$this->db->from('grade_submissions');
+		$this->db->join('subjects', 'subjects.subject_id = grade_submissions.gs_subject_id','left');
+		$this->db->join('student_sknowledge_grade', 'gs_id = skg_gs_id','left');
+		$this->db->join('student_subjectskill_grade', 'gs_id = ssg_gs_id','left');
+		$this->db->select('subjects.*,grade_submissions.*,student_sknowledge_grade.*,student_subjectskill_grade.*');
+		return $this->db->get()->result();
+	}
 }

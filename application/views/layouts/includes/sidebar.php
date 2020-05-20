@@ -61,7 +61,7 @@
 				</a>
 				<ul class="treeview-menu">
 					<?php if (array_key_exists("view_student_report", $data_permissions)) { ?>
-					<li><a href=""><i class="fa fa-file"></i> <span>Generate Student Report</span></a></li>
+					<li><a href="<?php echo site_url('student-report') ?>"><i class="fa fa-file"></i> <span>Generate Student Report</span></a></li>
 					<?php } ?>
 					<?php if (array_key_exists("view_class_report", $data_permissions)) { ?>
 					<li><a href=""><i class="fa fa-file"></i> <span>Generate Class Report</span></a></li>

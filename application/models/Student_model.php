@@ -16,6 +16,18 @@ class Student_model extends CI_Model
         return print_r($this->datatables->generate());
 	}
 
+	
+	// public function student_list_report_datatable()
+	// {
+	// 	$this->load->library('datatables');
+	// 	$this->datatables->select('student_id,student_name,student_nisn,student_dob,student_address,student_department_id');
+	// 	$this->datatables->from($this->_table);
+	// 	$this->datatables->edit_column('student_id','<input type="checkbox">', 'student_id');
+	// 	//$this->datatables->add_column('action', anchor('users/edit/$1','Edit',array('class'=>'btn btn-danger btn-sm')));
+        
+    //     return print_r($this->datatables->generate());
+	// }
+
 	public function student_datatable_by_department($dp_id,$class_id)
 	{
 		$this->load->library('datatables');
@@ -42,6 +54,20 @@ class Student_model extends CI_Model
 		}
 	}
 
+	public function findStudentClassNow($id)
+	{
+
+		$this->db->select('student_id,student_name,student_nis,student_nisn,student_address,department_name,class_grade');
+		$this->db->from('student_class');
+		$this->db->join('students','student_id = sclass_student_id');
+		$this->db->join('departments','student_department_id = department_id');
+		$this->db->join('classes','class_id = sclass_class_id');
+		$this->db->where('sclass_student_id',$id);
+		$this->db->limit(1);
+		$this->db->order_by('sclass_class_id','DESC');
+		return $this->db->get()->row_array();
+	}
+
 	public function edit($id,$data)
 	{
 		$this->db->where('student_id',$id);
@@ -57,7 +83,7 @@ class Student_model extends CI_Model
 
 	public function getList()
 	{
-		return $this->db->get($this->_table);
+		return $this->db->get($this->_table)->result();
 	}
 
 	public function getStudentbyGrade($subject_id,$grade)
